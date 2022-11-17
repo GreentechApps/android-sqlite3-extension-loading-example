@@ -1,25 +1,28 @@
 package snnafi.sqliteextension.example
 
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
+import androidx.core.view.isVisible
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import snnafi.sqliteextension.example.adapter.VerseAdapter
 import snnafi.sqliteextension.example.databinding.ActivityMainBinding
-import snnafi.sqliteextension.example.db.HadithDatabase
 import snnafi.sqliteextension.example.viewmodel.AppViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private lateinit var appDB: HadithDatabase
     private val viewmodel by viewModels<AppViewModel>()
+    private lateinit var verseAdapter: VerseAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,15 +32,36 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        // testExtension();
+        binding.content.type.inputType =
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+        binding.content.type.setOnEditorActionListener(object : TextView.OnEditorActionListener {
+            override fun onEditorAction(p0: TextView?, p1: Int, p2: KeyEvent?): Boolean {
+                if (p1 == EditorInfo.IME_ACTION_SEARCH) {
+                    setUpRecyclerView()
+                    p0?.let {
+                        if (it.text.toString().length >= 3) {
+                            testExtension(it.text.toString().trim())
+                        }
+                        return true
+                    }
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+                }
+                return false
+            }
 
-        binding.fab.setOnClickListener { view ->
-            testExtension()
-        }
+        });
+        binding.fab.isVisible = false
+    }
+
+    private fun setUpRecyclerView() {
+        binding.content.items.setHasFixedSize(true)
+        binding.content.items.layoutManager = LinearLayoutManager(applicationContext)
+    }
+
+    private fun clearRecyclerView() {
+        binding.content.items.setHasFixedSize(true)
+        binding.content.items.layoutManager = LinearLayoutManager(applicationContext)
+        binding.content.items.adapter = VerseAdapter(listOf())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -56,16 +80,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
-
-    private fun testExtension() {
+    private fun testExtension(text: String? = null) {
         Log.d("MainActivity", "testExtension")
 
-        val searchText = "الحمد"
-        val verses = App.oldSchoolWay.getVerses(searchText)
+        val searchText = text ?: "الحمد"
+        val verses = viewmodel.getVerses(searchText)
 
         verses.apply {
             forEach {
@@ -73,32 +92,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-//            viewmodel.getFirstVerse().observe(this, Observer<Verse> {
-//                Log.d("MainActivity", "getFirstVerse ${it.toString()}")
-//            })
-//
-//            viewmodel.getVerses().observe(this, Observer<List<Verse>> {
-//                Log.d("MainActivity", "getVerses -> ${it.count()}")
-//                it.forEach {
-//                    Log.d("Quran ", it.toString())
-//                }
-//
-//            })
-
-//        val searchText = "الحمد"
-//        viewmodel.getVerses(searchText).observe(this, Observer<List<Verse>> {
-//            Log.d("MainActivity", "getVerses -> ${it.count()}")
-//            it.forEach {
-//                Log.d("Quran [$searchText] ", it.toString())
-//            }
-//        })
-
-        // Github file limit 100 MB. hadith.db size 134.99 MB.
-//        App.hadithDatabase.hadithDao().getHadiths("الحمد")
-//            .observe(this, Observer<List<Hadith>> {
-//                it.forEach {
-//                    Log.d("Hadith", it.toString())
-//                }
-//            })
+        verseAdapter = VerseAdapter(verses);
+        binding.content.items.adapter = verseAdapter;
     }
 }

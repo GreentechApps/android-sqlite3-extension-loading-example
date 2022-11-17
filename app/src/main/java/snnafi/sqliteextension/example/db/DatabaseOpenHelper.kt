@@ -14,7 +14,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 
-class OldSchoolDatabase(val context: Context) : SQLiteOpenHelper(context, "quran.db", null, 1) {
+class DatabaseOpenHelper(val context: Context) : SQLiteOpenHelper(context, "quran.db", null, 7) {
 
     private var db: SQLiteDatabase? = null
     private var dbPath = ""
@@ -22,7 +22,7 @@ class OldSchoolDatabase(val context: Context) : SQLiteOpenHelper(context, "quran
 
     init {
         dbPath =
-            context.getDatabasePath(dbName).absolutePath // "/data/data/snnafi.sqliteextension.example/databases/quran.db"
+            context.getDatabasePath(dbName).absolutePath
         Log.d("DB PATH", dbPath)
     }
 
@@ -38,8 +38,8 @@ class OldSchoolDatabase(val context: Context) : SQLiteOpenHelper(context, "quran
         Log.d("OldSchoolDatabase", "On Create Configuration")
 
         val config = SQLiteDatabaseConfiguration(
-            SQLiteDatabaseConfiguration.MEMORY_DB_PATH,
-            SQLiteDatabase.CREATE_IF_NECESSARY
+            path,
+            openFlags
         )
 
         config.customExtensions.add(
