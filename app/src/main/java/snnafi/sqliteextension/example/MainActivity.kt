@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
     private fun testExtension(text: String? = null) {
         Log.d("MainActivity", "testExtension")
 
-        val searchText = text ?: "الحمد"
+        val searchText = text ?: "love"
         val verses = viewmodel.getVerses(searchText)
 
         verses.apply {
@@ -93,6 +93,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         verseAdapter = VerseAdapter(verses);
+
+        binding.content.resultTv.text = "Results: ${verses.size}"
         binding.content.items.adapter = verseAdapter;
     }
 }

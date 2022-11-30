@@ -14,11 +14,11 @@ import java.io.InputStream
 import java.io.OutputStream
 
 
-class DatabaseOpenHelper(val context: Context) : SQLiteOpenHelper(context, "quran.db", null, 7) {
+class DatabaseOpenHelper(val context: Context) : SQLiteOpenHelper(context, "en_transliteration.db", null, 1) {
 
     private var db: SQLiteDatabase? = null
     private var dbPath = ""
-    private val dbName = "quran.db"
+    private val dbName = "en_transliteration.db"
 
     init {
         dbPath =

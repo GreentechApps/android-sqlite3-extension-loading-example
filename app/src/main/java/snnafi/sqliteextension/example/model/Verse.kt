@@ -5,8 +5,9 @@ data class Verse(
     var sura: Int = -1,
     var ayah: Int = -1,
     var text: String? = "",
+    var rank : String = ""
 ) {
     override fun toString(): String {
-        return "$rowId - $sura - $ayah >  $text"
+        return "Rank: $rank , $rowId - $sura - $ayah >  $text"
     }
 }

@@ -19,10 +19,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/type_here"
+            android:text="love OR life"
             android:inputType="text"
             android:imeOptions="actionSearch"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/resultTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/items"
